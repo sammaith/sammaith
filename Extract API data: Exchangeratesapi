@@ -1,0 +1,29 @@
+#this code to access //Exchangeratesapi LogoExchangeratesapi.io// API and extrac latest currency exchange rates and upload them into data frame
+#create url
+url = "http://api.exchangeratesapi.io/v1/latest?base=EUR&access_key=***" 
+#request API and check endpoint status
+r=requests.get(url)
+r.status_code
+#write data into your pc
+with open("r_text", "w") as text_file:
+    text_file.write(r.text)
+
+# Turn the data into a dataframe
+import json
+df=pd.DataFrame(columns=["Curency","Rate"])
+curr=[]
+rate=[]
+#open file
+with open("r_text","r") as file:
+    r_read=file.read()
+#access data as dictionary
+j=json.loads(r_read)
+for k,v in j['rates'].items():
+    curr.append(k)
+    rate.append(v)
+#add values to the data frame
+df["Curency"]=curr
+df["Rate"]=rate
+#save file as csv
+df=df.set_index('Curency')
+df.to_csv('currency_exchange_rate.csv')
